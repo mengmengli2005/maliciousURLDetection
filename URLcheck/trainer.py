@@ -8,7 +8,7 @@ import numpy
 from sklearn import svm
 # from sklearn import cross_validation as cv
 from sklearn.model_selection import cross_val_score
-import matplotlib.pylab as plt
+# import matplotlib.pylab as plt
 import warnings
 
 warnings.filterwarnings("ignore", category=DeprecationWarning, module="pandas", lineno=570)
@@ -47,7 +47,7 @@ def svm_classifier(train, query, train_cols):
     # plot_point(train[train_cols], train['malicious'], Support_vector_index, W, b)
 
     #对模型的交叉验证得分，中文解释：https://blog.csdn.net/changzoe/article/details/78931214
-    scores = cross_val_score(clf, train[train_cols], train['malicious'], cv=30)
+    scores = cross_val_score(clf, train[train_cols], train['malicious'], cv=5)
     print('Estimated score SVM: %0.5f (+/- %0.5f)' % (scores.mean(), scores.std() / 2))
 
     #对测试集进行预测
@@ -92,7 +92,7 @@ def forest_classifier(train, query, train_cols):
 def train(db, test_db):
     query_csv = pandas.read_csv(test_db)
     cols_to_keep, train_cols = return_nonstring_col(query_csv.columns)
-    # query=query_csv[cols_to_keep]
+    query = query_csv[cols_to_keep]
 
     train_csv = pandas.read_csv(db)
     cols_to_keep, train_cols = return_nonstring_col(train_csv.columns)

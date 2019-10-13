@@ -29,7 +29,7 @@ def Tokenise(url):
                 if largest < l:
                         largest = l
         try:
-            return [float(sum_len)/no_ele, no_ele, largest]
+            return [round(float(sum_len)/no_ele, 2), no_ele, largest]
         except:
             return [0, no_ele, largest]
 
@@ -187,6 +187,54 @@ def safebrowsing(url):
         return -1
 
 
+# 下面是李晓萌加的
+# method to check the presence of Non-ASCII
+def isPresentUnicode(url):
+    try:
+        url.decode('ascii')
+    except UnicodeDecodeError:
+        return 1
+    else:
+        return 0
+
+# Method to count number of delimeters
+def countdelim(url):
+    count = 0
+    delim = [';', '_', '?', '=', '&']
+    for each in url:
+        if each in delim:
+            count = count + 1
+    return count
+
+# method to check the presence of hyphens
+def isPresentHyphen(url):
+    return url.count('-')
+
+# method to check the presence of @
+def isPresentAt(url):
+    return url.count('@')
+
+# method to check the presence of // in path
+# The existence of “//” within the URL path means that the user will be redirected to another website.
+# An example of such URL’s is: “http://www.legitimate.com//http://www.phishing.com”. We examine the presence of “//”
+def isPresentDSlash(url):
+    return url.count('//')
+
+# method to check No. of subdomain
+def countSubDomain(subdomain):
+    if not subdomain:
+        return 0
+    else:
+        return len(subdomain.split('.'))
+
+# method to check the presence of query
+def countQueries(query):
+    if not query:
+        return 0
+    else:
+        return len(query.split('&'))
+
+
 #这个函数调用了上面的所有函数，组建最后的特征Feature(这也是个字典<特征，值>)
 #这函数最终是在main函数里面调用的
 def feature_extract(url_input):
@@ -208,7 +256,10 @@ def feature_extract(url_input):
         #Feature['rank_host'], Feature['rank_country'] = sitepopularity(host)
 
         Feature['host'] = obj.netloc
-        Feature['path'] = obj.path
+        if obj.path == "":
+            Feature['path'] = " "
+        else:
+            Feature['path'] = obj.path
 
         Feature['Length_of_url'] = len(url_input)
         Feature['Length_of_host'] = len(host)
@@ -220,12 +271,21 @@ def feature_extract(url_input):
 
         Feature['sec_sen_word_cnt'] = Security_sensitive(tokens_words)
         Feature['IPaddress_presence'] = Check_IPaddress(tokens_words)
-        
+
+        # 以下feature是李晓萌加的 2019-10-13
+        Feature['Unicode_presence'] = isPresentUnicode(url_input)
+        Feature['No_of_delim'] = countdelim(url_input)
+        Feature['No_of_hyphen'] = isPresentHyphen(url_input)
+        Feature['AT_presence'] = isPresentAt(url_input)
+        Feature['DSlash_presence'] = isPresentDSlash(url_input)
+        Feature['No_of_subdomain'] = countSubDomain(url_input)
+        Feature['No_of_query'] = countQueries(url_input)
+
         # print host
         # print getASN(host)
         # Feature['exe_in_url']=exe_in_url(url_input)
         Feature['ASNno'] = getASN(host)
-        Feature['safebrowsing'] = safebrowsing(url_input)
+        # Feature['safebrowsing'] = safebrowsing(url_input)
         """wfeatures=web_content_features(url_input)
         
         for key in wfeatures:

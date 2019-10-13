@@ -4,6 +4,7 @@
 import csv
 import Feature_extraction as urlfeature
 import trainer as tr
+import trainer2 as tr2
 
 def resultwriter(feature, output_dest):
     flag=True
@@ -28,7 +29,7 @@ def process_URL_list(file_dest, output_dest):
                 ret_dict = urlfeature.feature_extract(url)
                 ret_dict['malicious'] = malicious_bool
                 feature.append([url, ret_dict])
-            if i == 1000:
+            if i == 100:
                 break
     resultwriter(feature, output_dest)
 
@@ -55,7 +56,8 @@ def process_test_url(url, output_dest):
 
 
 # def main():
-#process_URL_list('dataNN.csv', 'url_features.csv')
-#process_test_list("query.txt", 'query_features.csv')
+process_URL_list('URL.txt', 'url_features.csv')
+# process_test_list("query.txt", 'query_features.csv')
 #tr.train('url_features.csv', 'url_features.csv')         #arguments:(input_training feature, test/query traning features)
-tr.train('url_features.csv', 'query_features.csv')      #testing with urls in query.txt
+# tr.train('url_features.csv', 'query_features.csv')      #testing with urls in query.txt
+tr2.train('url_features.csv')
